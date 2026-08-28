@@ -1,0 +1,21 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Not found" description="This corner of the archive does not exist yet.">
+  <section class="page missing-page">
+    <p class="eyebrow">404 — MISPLACED EVIDENCE</p>
+    <h1>nothing lives here.<br /><span class="script blue">yet.</span></h1>
+    <p>The archive has plenty of other corners.</p>
+    <a class="button" href="/">return home</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .missing-page { display: flex; flex-direction: column; justify-content: center; padding: var(--page-gutter); }
+  .missing-page h1 { margin: 0 0 24px; font-size: clamp(64px, 11vw, 150px); letter-spacing: -0.07em; line-height: 0.82; }
+  .missing-page p:not(.eyebrow) { margin: 0 0 24px; color: var(--muted); }
+  .missing-page .button { align-self: flex-start; }
+</style>

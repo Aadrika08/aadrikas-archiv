@@ -1,0 +1,161 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+
+interface Props {
+  projects: CollectionEntry<'projects'>[];
+}
+
+const { projects } = Astro.props;
+const rendered = await Promise.all(projects.map(async (project) => ({
+  project,
+  rendered: await render(project),
+})));
+---
+
+<div class="project-archive" data-project-archive>
+  <div class="project-tabs" role="tablist" aria-label="Research projects">
+    {rendered.map(({ project }, index) => (
+      <button
+        class="project-tab"
+        type="button"
+        role="tab"
+        aria-selected={index === 0 ? 'true' : 'false'}
+        aria-controls={`project-panel-${index}`}
+        id={`project-tab-${index}`}
+        data-project-tab={index}
+      >
+        <span class="project-tab-number mono">{String(index + 1).padStart(2, '0')}</span>
+        <span>{project.data.title}</span>
+      </button>
+    ))}
+  </div>
+  <div class="project-panels">
+    {rendered.map(({ project, rendered: { Content } }, index) => (
+      <article
+        class="project-panel"
+        id={`project-panel-${index}`}
+        role="tabpanel"
+        aria-labelledby={`project-tab-${index}`}
+        hidden={index !== 0}
+        data-project-panel={index}
+      >
+        <p class="eyebrow">{project.data.period}</p>
+        <h2>{project.data.title}</h2>
+        <p class="project-summary">{project.data.summary}</p>
+        <div class="project-body"><Content /></div>
+      </article>
+    ))}
+  </div>
+</div>
+
+<script>
+  function bindProjectArchives() {
+    document.querySelectorAll<HTMLElement>('[data-project-archive]').forEach((archive) => {
+      if (archive.dataset.bound === 'true') return;
+      archive.dataset.bound = 'true';
+      const tabs = Array.from(archive.querySelectorAll<HTMLButtonElement>('[data-project-tab]'));
+      const panels = Array.from(archive.querySelectorAll<HTMLElement>('[data-project-panel]'));
+      const select = (index: number, focus = false) => {
+        tabs.forEach((tab, tabIndex) => {
+          const selected = tabIndex === index;
+          tab.setAttribute('aria-selected', String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+          if (selected && focus) tab.focus();
+        });
+        panels.forEach((panel, panelIndex) => { panel.hidden = panelIndex !== index; });
+      };
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => select(index));
+        tab.addEventListener('keydown', (event) => {
+          if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+          event.preventDefault();
+          const next = event.key === 'ArrowDown' ? (index + 1) % tabs.length : (index - 1 + tabs.length) % tabs.length;
+          select(next, true);
+        });
+      });
+      select(0);
+    });
+  }
+  document.addEventListener('astro:page-load', bindProjectArchives);
+  bindProjectArchives();
+</script>
+
+<style>
+  .project-archive {
+    display: grid;
+    grid-template-columns: minmax(250px, 0.68fr) minmax(0, 1.5fr);
+    min-height: calc(100vh - 180px);
+  }
+
+  .project-tabs {
+    border-right: 1px solid var(--line);
+  }
+
+  .project-tab {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 34px 1fr;
+    gap: 10px;
+    border: 0;
+    border-bottom: 1px solid var(--line-soft);
+    padding: 17px 22px;
+    color: var(--muted);
+    background: transparent;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .project-tab:hover,
+  .project-tab[aria-selected='true'] {
+    color: var(--ink);
+    background: var(--paper-active);
+  }
+
+  .project-tab-number {
+    color: var(--blue);
+    font-size: 9px;
+  }
+
+  .project-panel {
+    min-height: 100%;
+    padding: clamp(34px, 6vw, 84px);
+  }
+
+  .project-panel h2 {
+    max-width: 680px;
+    margin: 0 0 20px;
+    font-size: clamp(38px, 6vw, 76px);
+    letter-spacing: -0.06em;
+    line-height: 0.94;
+  }
+
+  .project-summary {
+    max-width: 690px;
+    margin: 0 0 42px;
+    color: var(--blue);
+    font-size: clamp(19px, 2.5vw, 30px);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+  }
+
+  .project-body {
+    max-width: 680px;
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  @media (max-width: 760px) {
+    .project-archive {
+      grid-template-columns: 1fr;
+    }
+
+    .project-tabs {
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+  }
+</style>

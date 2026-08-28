@@ -1,0 +1,86 @@
+---
+import { navItems } from '@/data';
+import ThemeLamp from './ThemeLamp.astro';
+import VisitorCounter from './VisitorCounter';
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+const isActive = (href: string) => href === '/' ? currentPath === '/' : currentPath.startsWith(href);
+---
+
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="archive-shell">
+  <aside class="sidebar" aria-label="Site sidebar">
+    <div>
+      <a class="brand" href="/">aadrika's archive</a>
+      <nav class="archive-nav" aria-label="Primary navigation">
+        {navItems.map((item) => (
+          <a class="nav-link" href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+            <span class="nav-label">{item.label}</span>
+            <span class="nav-index">{item.index}</span>
+          </a>
+        ))}
+      </nav>
+    </div>
+    <div class="sidebar-status">
+      <span class="online-row"><span class="online-dot" aria-hidden="true"></span>ONLINE — EST. 2026</span>
+      <VisitorCounter client:load />
+      <span>BEST VIEWED WITH CURIOSITY</span>
+    </div>
+  </aside>
+
+  <header class="mobile-header">
+    <details data-mobile-menu>
+      <summary class="mobile-summary">
+        <span class="mobile-brand">aadrika's archive</span>
+        <span class="mobile-menu-label">MENU +</span>
+      </summary>
+      <nav class="mobile-nav" aria-label="Mobile navigation">
+        {navItems.map((item) => (
+          <a class="nav-link" href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+            <span class="nav-label">{item.label}</span>
+            <span class="nav-index">{item.index}</span>
+          </a>
+        ))}
+      </nav>
+    </details>
+  </header>
+
+  <main class="pane" id="main-content" tabindex="-1" data-scroll-pane>
+    <slot />
+  </main>
+</div>
+
+<div class="end-strip" data-end-strip>the end, for now. see you soon &lt;3</div>
+<ThemeLamp />
+
+<script>
+  function bindArchiveShell() {
+    const pane = document.querySelector<HTMLElement>('[data-scroll-pane]');
+    const strip = document.querySelector<HTMLElement>('[data-end-strip]');
+    if (pane && strip && pane.dataset.scrollBound !== 'true') {
+      pane.dataset.scrollBound = 'true';
+      const update = () => {
+        const mobile = window.matchMedia('(max-width: 900px)').matches;
+        const atBottom = mobile
+          ? window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 12
+          : pane.scrollTop + pane.clientHeight >= pane.scrollHeight - 12;
+        strip.dataset.visible = String(atBottom);
+      };
+      pane.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update, { passive: true });
+      update();
+    }
+
+    document.querySelectorAll<HTMLAnchorElement>('[data-mobile-menu] a').forEach((link) => {
+      link.addEventListener('click', () => link.closest('details')?.removeAttribute('open'), { once: true });
+    });
+  }
+
+  document.addEventListener('astro:page-load', bindArchiveShell);
+  bindArchiveShell();
+</script>

@@ -1,0 +1,44 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageIntro from '@/components/PageIntro.astro';
+import { aboutCopy } from '@/data';
+---
+
+<BaseLayout title="About" description="About Aadrika Maurya: research, making, community, and questions about intelligence.">
+  <div class="page">
+    <PageIntro kicker="07 — ABOUT" title="an attempt to explain myself." deck="There is no neat one-sentence version. This is the longer, less efficient answer." />
+    <div class="about-layout">
+      <article class="about-letter">
+        <p class="about-greeting script blue">{aboutCopy.greeting}</p>
+        {aboutCopy.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        <p class="script about-signoff">— aadrika</p>
+      </article>
+      <aside class="about-aside">
+        <p class="eyebrow">CURRENT FOCUS</p>
+        <ul class="mono">
+          {aboutCopy.focus.map((item) => <li>{item}</li>)}
+        </ul>
+        <p class="eyebrow">BASED</p>
+        <p class="mono">{aboutCopy.based}</p>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .about-layout { display: grid; grid-template-columns: minmax(0, 760px) minmax(220px, 300px); gap: clamp(42px, 9vw, 130px); justify-content: center; padding: clamp(40px, 7vw, 90px) var(--page-gutter); }
+  .about-letter { font-size: clamp(17px, 1.7vw, 21px); line-height: 1.75; }
+  .about-letter p { margin: 0 0 1.45em; }
+  .about-greeting { font-size: clamp(34px, 5vw, 58px); line-height: 1; }
+  .about-signoff { margin-top: 1.8em !important; font-size: 42px; }
+  .about-aside { position: sticky; top: 38px; align-self: start; border-top: 1px solid var(--line); padding-top: 16px; }
+  .about-aside ul { margin: 0 0 36px; padding: 0; color: var(--muted); font-size: 10px; line-height: 2; list-style: none; }
+  .about-aside > .mono { color: var(--muted); font-size: 10px; }
+
+  @media (max-width: 760px) {
+    .about-layout { grid-template-columns: 1fr; }
+    .about-aside { position: static; grid-row: 1; }
+  }
+</style>

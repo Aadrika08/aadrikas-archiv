@@ -1,0 +1,60 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Shell from '@/components/Shell.astro';
+import { siteConfig } from '@/data';
+import '@/styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  article?: boolean;
+}
+
+const {
+  title,
+  description = siteConfig.description,
+  article = false,
+} = Astro.props;
+const pageTitle = title ? `${title} — ${siteConfig.title}` : siteConfig.title;
+const base = Astro.site ?? new URL(import.meta.env.PUBLIC_SITE_URL || siteConfig.url);
+const canonical = new URL(Astro.url.pathname, base);
+const schema = article
+  ? { '@context': 'https://schema.org', '@type': 'Article', headline: title, author: { '@type': 'Person', name: siteConfig.name }, url: canonical.href }
+  : { '@context': 'https://schema.org', '@type': 'Person', name: siteConfig.name, url: base.href, description };
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/archivo-700.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/louise-400.woff2" as="font" type="font/woff2" crossorigin />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/og-card.svg', base)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{pageTitle}</title>
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem('archive-theme');
+        const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    <ClientRouter />
+  </head>
+  <body>
+    <Shell currentPath={Astro.url.pathname}>
+      <slot />
+    </Shell>
+  </body>
+</html>

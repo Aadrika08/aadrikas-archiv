@@ -1,0 +1,55 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageIntro from '@/components/PageIntro.astro';
+import ContactForm from '@/components/ContactForm';
+import { contact } from '@/data';
+
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
+---
+
+<BaseLayout title="Contact" description="Get in touch with Aadrika Maurya about research, projects, writing, or unexpected ideas.">
+  <div class="page contact-page">
+    <PageIntro kicker="08 — CONTACT" title="send something strange." deck="Research questions, collaborations, recommendations, or a sentence you think I should read." />
+    <div class="contact-layout">
+      <section class="contact-direct" aria-labelledby="direct-contact-title">
+        <p class="eyebrow">DIRECT</p>
+        <h2 id="direct-contact-title">the door is open.</h2>
+        <a class="contact-email" href={contact.emailHref}>{contact.email}</a>
+        <ul class="social-list">
+          {contact.socialLinks.map((link) => (
+            <li>
+              {link.available && link.href
+                ? <a href={link.href} target="_blank" rel="noreferrer">{link.label}<span aria-hidden="true">↗</span></a>
+                : <span class="unavailable" title={link.note}>{link.label}<small>link forthcoming</small></span>}
+            </li>
+          ))}
+        </ul>
+      </section>
+      <section class="contact-form-wrap" aria-labelledby="contact-form-title">
+        <p class="eyebrow">MESSAGE</p>
+        <h2 id="contact-form-title">write from here.</h2>
+        <ContactForm siteKey={siteKey} client:load />
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .contact-layout { display: grid; grid-template-columns: minmax(260px, 0.75fr) minmax(340px, 1.25fr); min-height: calc(100vh - 190px); }
+  .contact-direct, .contact-form-wrap { padding: clamp(36px, 6vw, 82px) var(--page-gutter); }
+  .contact-direct { border-right: 1px solid var(--line); background: var(--paper-soft); }
+  .contact-direct h2, .contact-form-wrap h2 { margin: 0 0 28px; font-size: clamp(30px, 4vw, 54px); letter-spacing: -0.052em; line-height: 1; }
+  .contact-email { display: inline-block; border-bottom: 1px solid currentColor; font-family: var(--mono); font-size: 12px; }
+  .social-list { margin: 56px 0 0; padding: 0; list-style: none; }
+  .social-list li { border-top: 1px solid var(--line-soft); }
+  .social-list a, .unavailable { display: flex; align-items: baseline; justify-content: space-between; padding: 12px 0; font-weight: 700; }
+  .unavailable { color: var(--muted); }
+  .unavailable small { font-family: var(--mono); font-size: 8px; font-weight: 400; text-transform: uppercase; }
+
+  @media (max-width: 760px) {
+    .contact-layout { grid-template-columns: 1fr; }
+    .contact-direct { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+</style>

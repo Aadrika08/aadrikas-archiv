@@ -1,0 +1,18 @@
+---
+export const prerender = false;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageIntro from '@/components/PageIntro.astro';
+import GuestbookConstellation from '@/components/GuestbookConstellation';
+import { getApprovedGuestbookEntries } from '@/lib/server/supabase';
+
+const entries = await getApprovedGuestbookEntries();
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
+---
+
+<BaseLayout title="Guestbook" description="A constellation of notes left by people who wandered through Aadrika's archive.">
+  <div class="page guestbook-page">
+    <PageIntro kicker="06 — GUESTBOOK" title="the constellation." deck="Leave a thought, question, recommendation, or sentence. Approved notes become points of light." />
+    <GuestbookConstellation entries={entries} siteKey={siteKey} client:load />
+  </div>
+</BaseLayout>

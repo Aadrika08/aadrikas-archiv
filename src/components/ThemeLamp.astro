@@ -1,0 +1,80 @@
+<button class="theme-lamp" type="button" aria-label="Switch to dark theme" title="Toggle light or dark theme" data-theme-toggle>
+  <svg width="54" height="132" viewBox="0 0 80 190" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M60 12 C64 55, 58 120, 60 186"></path>
+    <path d="M60 14 C44 3, 20 8, 17 34 C15 52, 30 60, 37 49 C41 42, 33 36, 29 44"></path>
+    <path d="M32 55 L34 66"></path>
+    <path d="M22 68 L46 68 L40 78 L28 78 Z" fill="currentColor" stroke="none"></path>
+    <path d="M28 79 L40 79 L44 104 L24 104 Z"></path>
+    <path class="lamp-rays" d="M14 88 L5 84 M12 98 L2 98 M14 108 L5 113 M54 90 L63 86 M56 99 L66 99 M54 108 L63 113"></path>
+  </svg>
+  <span class="theme-label mono">LIGHT</span>
+</button>
+
+<script>
+  function bindThemeToggle() {
+    const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+    if (!button || button.dataset.bound === 'true') return;
+    button.dataset.bound = 'true';
+    const label = button.querySelector<HTMLElement>('.theme-label');
+    const update = () => {
+      const dark = document.documentElement.dataset.theme === 'dark';
+      if (label) label.textContent = dark ? 'DARK' : 'LIGHT';
+      button.setAttribute('aria-label', `Switch to ${dark ? 'light' : 'dark'} theme`);
+    };
+    update();
+    button.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem('archive-theme', next);
+      update();
+    });
+  }
+
+  document.addEventListener('astro:page-load', bindThemeToggle);
+  bindThemeToggle();
+</script>
+
+<style>
+  .theme-lamp {
+    position: fixed;
+    right: 22px;
+    bottom: 42px;
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border: 0;
+    padding: 0;
+    color: var(--ink);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .theme-lamp:hover {
+    color: var(--blue);
+  }
+
+  .theme-label {
+    font-size: 8px;
+    letter-spacing: 0.14em;
+  }
+
+  .lamp-rays {
+    opacity: 0;
+    transition: opacity 180ms ease;
+  }
+
+  :global(:root[data-theme='dark']) .lamp-rays {
+    opacity: 1;
+  }
+
+  @media (max-width: 900px) {
+    .theme-lamp {
+      right: 10px;
+      bottom: 39px;
+      transform: scale(0.72);
+      transform-origin: bottom right;
+    }
+  }
+</style>

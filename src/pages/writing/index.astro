@@ -1,0 +1,24 @@
+---
+export const prerender = true;
+
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageIntro from '@/components/PageIntro.astro';
+
+const writing = (await getCollection('writing', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title="Writing" description="Essays, field notes, talks, and unfinished thoughts by Aadrika Maurya.">
+  <div class="page">
+    <PageIntro kicker="05 — WRITING" title="things i couldn't leave alone." deck="Essays, notes, talks, and work in progress. The unfinished pieces are allowed to say so." />
+    <div class="rows writing-rows">
+      {writing.map((entry) => (
+        <a class="row-link" href={`/writing/${entry.data.slug}`}>
+          <span class="row-title">{entry.data.title}</span>
+          <span class="row-meta">{entry.data.year} · {entry.data.kind}</span>
+          <span class="row-detail">{entry.data.status === 'unfinished' ? 'UNFINISHED DRAFT' : entry.data.summary}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

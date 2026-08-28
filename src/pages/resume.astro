@@ -1,0 +1,91 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageIntro from '@/components/PageIntro.astro';
+import { resumeSections, skills } from '@/data';
+---
+
+<BaseLayout title="Résumé" description="Aadrika Maurya's research, leadership, community work, education, skills, and honors.">
+  <div class="page resume-page">
+    <PageIntro kicker="03 — RÉSUMÉ" title="a working record." deck="Research, leadership, community building, and a persistent habit of making projects larger than they started." />
+    <section class="skills-section section">
+      <span class="section-number">SKILLS</span>
+      <div class="skill-list">
+        {skills.map((skill) => <span class="skill mono">{skill}</span>)}
+      </div>
+    </section>
+    {resumeSections.map((section, sectionIndex) => (
+      <section class="resume-section" aria-labelledby={`resume-${sectionIndex}`}>
+        <h2 id={`resume-${sectionIndex}`}>{section.section}</h2>
+        <div class="resume-rows">
+          {section.rows.map((row) => (
+            <article class="resume-row">
+              <div>
+                <h3>{row.role}</h3>
+                <p class="mono resume-dates">{row.dates}</p>
+              </div>
+              <p class="resume-org">{row.organization}</p>
+              <p class="mono resume-detail">{row.detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .skill-list {
+    display: flex;
+    max-width: 850px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .skill {
+    border: 1px solid var(--line);
+    padding: 7px 10px;
+    font-size: 10px;
+  }
+
+  .resume-section {
+    display: grid;
+    grid-template-columns: minmax(160px, 0.45fr) minmax(0, 1.55fr);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .resume-section > h2 {
+    margin: 0;
+    padding: 26px var(--page-gutter);
+    border-right: 1px solid var(--line);
+    font-size: clamp(24px, 3vw, 38px);
+    letter-spacing: -0.045em;
+  }
+
+  .resume-row {
+    display: grid;
+    grid-template-columns: minmax(170px, 0.8fr) minmax(180px, 1fr) minmax(220px, 1.3fr);
+    gap: 24px;
+    padding: 20px 26px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .resume-row:last-child { border-bottom: 0; }
+  .resume-row h3, .resume-row p { margin: 0; }
+  .resume-row h3 { font-size: 16px; letter-spacing: -0.025em; }
+  .resume-dates, .resume-detail { margin-top: 5px !important; color: var(--muted); font-size: 9px; line-height: 1.6; }
+  .resume-org { font-size: 13px; line-height: 1.45; }
+
+  @media (max-width: 980px) {
+    .resume-section { grid-template-columns: 1fr; }
+    .resume-section > h2 { border-right: 0; border-bottom: 1px solid var(--line); }
+    .resume-row { grid-template-columns: 1fr 1fr; }
+    .resume-detail { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 560px) {
+    .resume-row { grid-template-columns: 1fr; }
+    .resume-detail { grid-column: auto; }
+  }
+</style>
