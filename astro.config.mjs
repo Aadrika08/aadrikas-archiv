@@ -7,7 +7,11 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   site: process.env.PUBLIC_SITE_URL || 'https://example.com',
   output: 'server',
-  adapter: vercel(),
+  adapter: vercel({
+    webAnalytics: {
+      enabled: true,
+    },
+  }),
   integrations: [mdx(), react(), sitemap()],
   image: {
     responsiveStyles: true,
