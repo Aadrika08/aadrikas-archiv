@@ -1,0 +1,4 @@
+Nimbus Sans L
+Copyright 2014 by (URW)++ Design & Development GmbH
+Font files supplied unmodified in helvetica-neue-similar-fonts.zip.
+See GNU General Public License.txt for the accompanying license.
