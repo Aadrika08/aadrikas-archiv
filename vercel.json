@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "node scripts/verify-static-portfolio.cjs",
+  "outputDirectory": "portfolio-redesign/dist",
+  "trailingSlash": true
+}

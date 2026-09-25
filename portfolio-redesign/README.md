@@ -1,7 +1,5 @@
-# Portfolio preview
+# Portfolio website
 
-The reviewed static website, including its current camera portrait and writing index.
+Vercel serves the reviewed static website from dist using the root vercel.json configuration. The original Astro source remains in the repository, but is not used by this deployment.
 
-Run: python -m http.server 4173 --directory dist
-
-The existing Astro app and production configuration are unchanged.
+Local preview: python -m http.server 4173 --directory dist
